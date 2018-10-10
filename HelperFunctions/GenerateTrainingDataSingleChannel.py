@@ -44,7 +44,7 @@ def CreateTrainingData(ImageDirectory, MaskDirectory):
       blankX[:fn.shape[0], :fn.shape[1]] = fn
     
     
-    images.append(blankX)
+      images.append(blankX)
     images = np.array(images)
 
     masks=[]
@@ -53,7 +53,7 @@ def CreateTrainingData(ImageDirectory, MaskDirectory):
       blankY[:fn.shape[0], :fn.shape[1]] = fn
     
     
-    masks.append(blankY)
+      masks.append(blankY)
      
     masks = np.array(masks)
 
@@ -124,18 +124,31 @@ def CreateTrainingData(ImageDirectory, MaskDirectory):
     Y = sorted(glob(MaskDirectory + '*.tif'))
     listX = list(map(imread,X))
     listY = list(map(imread,Y))
-    rankthreeX = np.zeros((len(listX), listX[0].shape[0], listX[0].shape[1]),dtype = float)
-    rankthreeY = np.zeros((len(listY), listY[0].shape[0], listY[0].shape[1]),dtype = float)
+    images=[]
+    for fn in listX:
 
-    arraysX, arraysY = [listX[i] for i in range(len(listX))] , [listY[i] for i in range(len(listY))] 
-   
-  
-    rankthreeX = np.stack(arraysX, axis = 0)
-    rankthreeY = np.stack(arraysY, axis = 0)
+           blankX = np.zeros([WIDTH, HEIGHT], dtype = float)
 
-    rankfourX = np.expand_dims(rankthreeX, axis = -1)
-    rankfourY = np.expand_dims(rankthreeY, axis = -1)
+           blankX[:fn.shape[0], :fn.shape[1]] = fn
     
+    
+           images.append(blankX)
+    images = np.array(images)
+
+    masks=[]
+    for fn in listY:
+          blankY = np.zeros([WIDTH, HEIGHT], dtype = int)
+          blankY[:fn.shape[0], :fn.shape[1]] = fn
+    
+    
+          masks.append(blankY)
+    
+    masks = np.array(masks)
+
+    rankfourX = np.expand_dims(images, axis = -1)
+    rankfourY = np.expand_dims(masks, axis = -1) 
+    
+    print(rankfourX.shape)
     return rankfourX, rankfourY
 
 
@@ -150,19 +163,20 @@ def sample_2Dtiles(image, annotation, tile_shape=(32,32), samples=10):
     return np.array(sample_im), np.array(sample_mask)
 
 
-def getTrainingTiles(rankfourX, rankfourY,PATCH_HEIGHT,PATCH_WIDTH, num_samples = 10):
-    
-    X = []
-    Y = []
-    for im, mask in zip(rankfourX, rankfourY):
+def getTrainingTiles(images, masks,PATCH_HEIGHT, PATCH_WIDTH, num_samples = 10):
+    Xin = []
+    Yin = []
+    for im, mask in zip(images, masks):
       x,y = sample_2Dtiles(im, mask, tile_shape=(PATCH_HEIGHT, PATCH_WIDTH), samples=num_samples)
-      X.append(x)
-      Y.append(y)
-      X = np.array(X)
-      X = X.reshape((X.shape[0]*X.shape[1], X.shape[2], X.shape[3], X.shape[4]))
-      Y = np.array(Y)
-      Y = Y.reshape((Y.shape[0]*Y.shape[1], Y.shape[2], Y.shape[3], Y.shape[4]))
-   return X, Y   
+      
+      Xin.append(x)
+      Yin.append(y)
+      
+    Xin = np.array(Xin)
+    Xin = Xin.reshape((Xin.shape[0]*Xin.shape[1], Xin.shape[2], Xin.shape[3], Xin.shape[4]))
+    Yin = np.array(Yin)
+    Yin = Yin.reshape((Yin.shape[0]*Yin.shape[1], Yin.shape[2], Yin.shape[3], Yin.shape[4]))
+    return Xin, Yin   
     
     
     
