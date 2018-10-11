@@ -10,7 +10,8 @@ from Normalize import normalizeFloat, normalizeMinMax, Path, save_tiff_imagej_co
 from keras.preprocessing.image import ImageDataGenerator
 from skimage import transform
 
-def CreateTrainingData(ImageDirectory, MaskDirectory): 
+
+def AugmentImages(ImageDirectory, MaskDirectory):
     X = sorted(glob(ImageDirectory + '*.tif'))
     Y = sorted(glob(MaskDirectory + '*.tif'))
 
@@ -120,6 +121,9 @@ def CreateTrainingData(ImageDirectory, MaskDirectory):
      
       save_tiff_imagej_compatible((targetdirY + Filename ) , resultY, axes)    
 
+
+def LoadTrainingData(ImageDirectory, MaskDirectory): 
+    
     X = sorted(glob(ImageDirectory + '*.tif'))
     Y = sorted(glob(MaskDirectory + '*.tif'))
     listX = list(map(imread,X))
