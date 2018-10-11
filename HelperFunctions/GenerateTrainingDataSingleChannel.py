@@ -128,6 +128,13 @@ def LoadTrainingData(ImageDirectory, MaskDirectory):
     Y = sorted(glob(MaskDirectory + '*.tif'))
     listX = list(map(imread,X))
     listY = list(map(imread,Y))
+    WIDTH = 0
+    HEIGHT = 0
+    for i in range(len(listX)):
+      if listX[i].shape[0] > WIDTH:
+        WIDTH = listX[i].shape[0]
+      if listX[i].shape[1] > HEIGHT:
+        HEIGHT = listX[i].shape[1]
     images=[]
     for fn in listX:
 
